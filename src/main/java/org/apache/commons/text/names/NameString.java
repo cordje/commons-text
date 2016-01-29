@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.text.names;
+package org.apache.commons.text.names.modifiedREB;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,9 +60,8 @@ final class NameString {
      * @param submatchIndex which of the parenthesized submatches to use
      * @return the part of the namestring that got chopped off
      */
-    String chopWithRegex(String regex, int submatchIndex) {
+    String chopWithRegex(Pattern pattern, int submatchIndex) {
         String chopped = "";
-        Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(this.str);
 
         // workdaround for numReplacements in Java
@@ -72,12 +71,11 @@ final class NameString {
         }
 
         // recreate or the groups are gone
-        pattern = Pattern.compile(regex);
         matcher = pattern.matcher(this.str);
         if (matcher.find()) {
             boolean subset = matcher.groupCount() > submatchIndex;
             if (subset) {
-                this.str = this.str.replaceAll(regex, " ");
+                this.str = pattern.matcher(this.str).replaceAll(" ");
                 if (numReplacements > 1) {
                     throw new NameParseException("The regex being used to find the name has multiple matches.");
                 }
